@@ -1,4 +1,4 @@
-﻿namespace KeyOverlay_qwq
+﻿namespace Glacc.KeyOverlay_qwq
 {
     internal class Program
     {
