@@ -73,8 +73,8 @@ namespace Glacc.KeyOverlay_qwq.Elements
             get => m_keyCount;
         }
 
-        public int fadeDuration = 8;
-        int fadeTick = 0;
+        public int fadeDuration = 100;
+        float fadeTimeRemaining = 0;
 
         int lightingRange;
 
@@ -84,6 +84,11 @@ namespace Glacc.KeyOverlay_qwq.Elements
             get => m_pressed;
         }
         bool pressedOld = false;
+        bool m_pressedThisFrame = false;
+        public bool pressedThisFrame
+        {
+            get => m_pressedThisFrame;
+        }
 
         RectangleShape background = new RectangleShape();
         RectangleShape[] borderRectangles = new RectangleShape[4];
@@ -233,17 +238,24 @@ namespace Glacc.KeyOverlay_qwq.Elements
         {
             m_pressed = CheckKeyPress();
 
+            m_pressedThisFrame = false;
             if (m_pressed)
             {
-                fadeTick = fadeDuration;
+                fadeTimeRemaining = fadeDuration;
 
                 if (!pressedOld)
+                {
+                    m_pressedThisFrame = true;
                     m_keyCount++;
+                }
             }
             else
             {
-                if (fadeTick > 0)
-                    fadeTick--;
+                if (fadeTimeRemaining > 0f)
+                    fadeTimeRemaining -= 1000f / AppSettings.tickrate;
+
+                if (fadeTimeRemaining < 0f)
+                    fadeTimeRemaining = 0f;
             }
 
             pressedOld = m_pressed;
@@ -255,7 +267,7 @@ namespace Glacc.KeyOverlay_qwq.Elements
             UpdateBackgroundAndBorders();
 
             // Background and lighting alpha
-            float alphaKeyPressNormalizedTo255 = (fadeTick / (float)fadeDuration) * 255f;
+            float alphaKeyPressNormalizedTo255 = (fadeTimeRemaining / fadeDuration) * 255f;
             byte alphaBackground = (byte)(alphaKeyPressNormalizedTo255 * 0.5f);
             byte alphaLighting = (byte)(alphaKeyPressNormalizedTo255);
 

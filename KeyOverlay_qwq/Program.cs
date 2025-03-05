@@ -14,6 +14,15 @@ namespace Glacc.KeyOverlay_qwq
         static Mutex settingsUpdateMutex = new Mutex();
         static bool settingsUpdateFlag = false;
 
+        static RenderStates renderStatesAlphaBlend = RenderStates.Default;
+
+        static void InitRenderStates()
+        {
+            renderStatesAlphaBlend.BlendMode.AlphaSrcFactor = BlendMode.Factor.One;
+            renderStatesAlphaBlend.BlendMode.AlphaDstFactor = BlendMode.Factor.OneMinusSrcAlpha;
+            Settings.renderStates = renderStatesAlphaBlend;
+        }
+
         static void AddKeysElements()
         {
             int keyX = AppSettings.keySpacing;
@@ -54,13 +63,17 @@ namespace Glacc.KeyOverlay_qwq
                 // Update position for next key
                 keyX += AppSettings.keySize + AppSettings.keySpacing;
 
+                // The bars associated to the key.
+                KeyPressBar bars = new KeyPressBar(key);
+
+                elements.Add(bars);
                 elements.Add(key);
             }
         }
 
         static void Initialize()
         {
-            Settings.bgColor = Color.Black;
+            Settings.bgColor = AppSettings.backgroundColour;
 
             Textures.InitTextures();
 
@@ -89,6 +102,12 @@ namespace Glacc.KeyOverlay_qwq
             Config.configChangingMutex.ReleaseMutex();
 
             window?.SetSize(AppSettings.width, AppSettings.height, true);
+
+            if (window != null)
+            {
+                window.updateTickrate = AppSettings.tickrate;
+                // window.window?.SetFramerateLimit((uint)AppSettings.framerate);
+            }
         }
 
         static void OnConfigFileChanged(object? sender, EventArgs args)
@@ -101,6 +120,8 @@ namespace Glacc.KeyOverlay_qwq
         #region WindowEvents
         static void UserInit(object? sender, EventArgs args)
         {
+            // InitRenderStates();
+
             Initialize();
         }
 

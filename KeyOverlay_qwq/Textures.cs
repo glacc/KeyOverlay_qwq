@@ -4,52 +4,71 @@ namespace Glacc.KeyOverlay_qwq
 {
     internal class Textures
     {
+        static float CalculateFromNumAToNumB(float start, float end, float precent)
+        {
+            float difference = end - start;
+            return start + (difference * precent);
+        }
+
         static Texture? fadeTexture;
         public static Sprite? fade;
-        static void InitFadeTexture()
+        static void InitFadeTexture(int width, int height, Color colorStartFromTop, Color colorEndToBottom, ref Texture? texture)
         {
-            int textureWidth = AppSettings.width;
-            int textureHeight = AppSettings.fadeHeight;
-
-            int stride = textureWidth * 4;
-            int pixelCount = textureWidth * textureHeight;
+            int stride = width * 4;
+            int pixelCount = width * height;
 
             byte[] pixels = new byte[pixelCount * 4];
             Span<byte> pixelsSpan = pixels;
 
-            fadeTexture?.Dispose();
-            fadeTexture = new Texture((uint)AppSettings.width, (uint)AppSettings.fadeHeight);
+            texture?.Dispose();
+            texture = new Texture((uint)width, (uint)height);
 
-            byte r = AppSettings.backgroundColour[0];
-            byte g = AppSettings.backgroundColour[1];
-            byte b = AppSettings.backgroundColour[2];
+            byte rStart = colorStartFromTop.R;
+            byte gStart = colorStartFromTop.G;
+            byte bStart = colorStartFromTop.B;
+            byte aStart = colorStartFromTop.A;
 
-            for (int y = 0; y < textureHeight; y++)
+            byte rEnd = colorEndToBottom.R;
+            byte gEnd = colorEndToBottom.G;
+            byte bEnd = colorEndToBottom.B;
+            byte aEnd = colorEndToBottom.A;
+
+            for (int y = 0; y < height; y++)
             {
                 Span<byte> pixelsCurrentLine = pixelsSpan.Slice(y * stride, stride);
 
-                byte alphaCurrentLine = (byte)((1f - (y / (float)textureHeight)) * 255f);
+                float percent = y / (float)height;
+
+                byte rCurrentLine = (byte)CalculateFromNumAToNumB(rStart, rEnd, percent);
+                byte gCurrentLine = (byte)CalculateFromNumAToNumB(gStart, gEnd, percent);
+                byte bCurrentLine = (byte)CalculateFromNumAToNumB(bStart, bEnd, percent);
+                byte aCurrentLine = (byte)CalculateFromNumAToNumB(aStart, aEnd, percent);
 
                 int offsetCurrentLine = 0;
 
-                for (int x = 0; x < textureWidth; x++)
+                for (int x = 0; x < width; x++)
                 {
-                    pixelsCurrentLine[offsetCurrentLine++] = r;
-                    pixelsCurrentLine[offsetCurrentLine++] = g;
-                    pixelsCurrentLine[offsetCurrentLine++] = b;
-                    pixelsCurrentLine[offsetCurrentLine++] = alphaCurrentLine;
+                    pixelsCurrentLine[offsetCurrentLine++] = rCurrentLine;
+                    pixelsCurrentLine[offsetCurrentLine++] = gCurrentLine;
+                    pixelsCurrentLine[offsetCurrentLine++] = bCurrentLine;
+                    pixelsCurrentLine[offsetCurrentLine++] = aCurrentLine;
                 }
             }
 
-            fadeTexture.Update(pixels);
-
-            fade?.Dispose();
-            fade = new Sprite(fadeTexture);
+            texture.Update(pixels);
         }
 
         public static void InitTextures()
         {
-            InitFadeTexture();
+            InitFadeTexture(
+                AppSettings.width,
+                AppSettings.fadeHeight,
+                AppSettings.backgroundColour,
+                new Color(AppSettings.backgroundColour.ToInteger() & 0xFFFFFF00),
+                ref fadeTexture
+            );
+            fade?.Dispose();
+            fade = new Sprite(fadeTexture);
         }
     }
 }
