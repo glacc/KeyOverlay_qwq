@@ -1,11 +1,18 @@
 ﻿
+using System.Reflection;
+using System.Threading;
+
 namespace Glacc.KeyOverlay_qwq
 {
     // Based on https://github.com/Friedchicken-42/KeyOverlay/blob/main/Config.cs
 
     internal class Config
     {
+        public static Mutex configChangingMutex = new Mutex();
+
         const string configFileName = "config.ini";
+
+        static string configFileFullPath;
 
         static Dictionary<string, Dictionary<string, string>> configSections = new Dictionary<string, Dictionary<string, string>>();
         public static Dictionary<string, Dictionary<string, string>> config
@@ -17,11 +24,13 @@ namespace Glacc.KeyOverlay_qwq
 
         public static EventHandler<EventArgs>? onConfigFileChanged = null;
 
-        static void ReadConfigFile()
+        public static void ReadConfigFile()
         {
+            configChangingMutex.WaitOne();
+
             configSections.Clear();
 
-            string[] linesOfConfigFile = File.ReadAllLines(configFileName);
+            string[] linesOfConfigFile = File.ReadAllLines(configFileFullPath);
 
             Dictionary<string, string>? currentSection = null;
             string currentSectionName = string.Empty;
@@ -81,6 +90,10 @@ namespace Glacc.KeyOverlay_qwq
                         currentSection[key] = value;
                 }
             }
+
+            configChangingMutex.ReleaseMutex();
+
+            fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         static void OnConfigFileChangedInternal(object? sender, FileSystemEventArgs args)
@@ -95,7 +108,12 @@ namespace Glacc.KeyOverlay_qwq
 
         static Config()
         {
-            fileSystemWatcher = new FileSystemWatcher(configFileName);
+            string assemblyPath = string.Join('\\', Assembly.GetExecutingAssembly().Location.Split("\\").SkipLast(1));
+            configFileFullPath = Path.Combine(assemblyPath, configFileName);
+
+            fileSystemWatcher = new FileSystemWatcher(assemblyPath);
+            fileSystemWatcher.Filter = configFileName;
+            fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
             fileSystemWatcher.Changed += OnConfigFileChangedInternal;
         }
     }

@@ -43,7 +43,7 @@ namespace Glacc.KeyOverlay_qwq.Elements
         public Color keyColor;
 
         Keyboard.Key? m_keyCode = null;
-        public Keyboard.Key? keyCode
+        public Keyboard.Key? keycode
         {
             get => m_keyCode;
             set
