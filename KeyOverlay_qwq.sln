@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35728.132 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyOverlay_qwq", "KeyOverlay_qwq\KeyOverlay_qwq.csproj", "{7AE9ACEE-CD26-4DAE-9AC7-15A91E7AE190}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glacc.UI", "Glacc.UI\Glacc.UI\Glacc.UI.csproj", "{9EF80D12-C0C4-4B4E-B012-89F59D3BA15B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{7AE9ACEE-CD26-4DAE-9AC7-15A91E7AE190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AE9ACEE-CD26-4DAE-9AC7-15A91E7AE190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AE9ACEE-CD26-4DAE-9AC7-15A91E7AE190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EF80D12-C0C4-4B4E-B012-89F59D3BA15B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EF80D12-C0C4-4B4E-B012-89F59D3BA15B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EF80D12-C0C4-4B4E-B012-89F59D3BA15B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EF80D12-C0C4-4B4E-B012-89F59D3BA15B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
