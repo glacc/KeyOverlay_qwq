@@ -63,8 +63,14 @@ namespace Glacc.KeyOverlay_qwq
                 // Update position for next key
                 keyX += AppSettings.keySize + AppSettings.keySpacing;
 
-                // The bars associated to the key.
+                // The bars and counter associated to the key.
                 KeyPressBar bars = new KeyPressBar(key);
+
+                if (Settings.font != null)
+                {
+                    KeyCounter counter = new KeyCounter(keyX + (key.width / 2), keyY + key.height + (AppSettings.keySpacing / 2), key, 8, 12, Settings.font);
+                    elements.Add(counter);
+                }
 
                 elements.Add(bars);
                 elements.Add(key);
