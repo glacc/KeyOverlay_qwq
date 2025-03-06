@@ -150,7 +150,7 @@ namespace Glacc.KeyOverlay_qwq.Elements
                 }
 
                 distance = distance / lightingRange;
-                distance = MathF.Pow(distance, 0.25f);
+                distance = MathF.Pow(distance, AppSettings.lightAlphaCorrection);
                 distance = Math.Clamp(distance * 255f, 0f, 255f);
 
                 return (byte)(255 - (int)distance);
@@ -274,7 +274,7 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
             // Background and lighting alpha
             float alphaKeyPressNormalizedTo255 = (fadeTimeRemaining / fadeDuration) * 255f;
-            byte alphaBackground = (byte)(alphaKeyPressNormalizedTo255 * 0.5f);
+            byte alphaBackground = (byte)Math.Clamp(alphaKeyPressNormalizedTo255 * AppSettings.keyPressAlpha, 0f, 255f);
             byte alphaLighting = (byte)(alphaKeyPressNormalizedTo255);
 
             UInt32 colorWithoutAlpha = keyColor.ToInteger() & 0xFFFFFF00;

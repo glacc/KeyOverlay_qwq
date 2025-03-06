@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 
 namespace Glacc.KeyOverlay_qwq.Elements
 {
-    internal class KeyPressBar : Element
+    internal class KeyPressBar : Element, IDisposable
     {
-        public Key? key = null;
-
-        public Color barColor;
+        public Key key;
 
         float barMovementPixelPerTick;
         Vector2f barMovementVector;
@@ -23,16 +21,33 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
         const float safeYPosition = -10f;
 
+        RenderTexture texture;
+        Sprite sprite;
+
+        Sprite fadeMask;
+
+        readonly static RenderStates renderStatesFadeMaskBlend;
+
+        static KeyPressBar()
+        {
+            renderStatesFadeMaskBlend = new RenderStates(RenderStates.Default);
+
+            renderStatesFadeMaskBlend.BlendMode.ColorSrcFactor = BlendMode.Factor.Zero;
+            renderStatesFadeMaskBlend.BlendMode.ColorDstFactor = BlendMode.Factor.One;
+            renderStatesFadeMaskBlend.BlendMode.ColorEquation = BlendMode.Equation.Add;
+
+            renderStatesFadeMaskBlend.BlendMode.AlphaSrcFactor = BlendMode.Factor.One;
+            renderStatesFadeMaskBlend.BlendMode.AlphaDstFactor = BlendMode.Factor.Zero;
+            renderStatesFadeMaskBlend.BlendMode.AlphaEquation = BlendMode.Equation.Min;
+        }
+
         public override void Update()
         {
-            if (key == null)
-                return;
-
             if (key.pressedThisFrame)
             {
                 RectangleShape newBar = new RectangleShape();
                 newBar.FillColor = key.keyColor;
-                newBar.Position = new Vector2f(key.px, key.py);
+                newBar.Position = new Vector2f(0f, key.py);
                 newBar.Size = new Vector2f(key.width, 0f);
 
                 if (currentBarIndex < 0)
@@ -83,14 +98,39 @@ namespace Glacc.KeyOverlay_qwq.Elements
         }
 
         public override Drawable?[] Draw()
-            => bars.ToArray();
+        {
+            texture.Clear(Color.Transparent);
 
-        public KeyPressBar(Key? key)
+            foreach (RectangleShape bar in bars)
+                texture.Draw(bar);
+
+            texture.Draw(fadeMask, renderStatesFadeMaskBlend);
+
+            texture.Display();
+
+            return [sprite];
+        }
+
+        public void Dispose()
+        {
+            texture.Dispose();
+            sprite.Dispose();
+            fadeMask.Dispose();
+        }
+
+        public KeyPressBar(Key key)
         {
             this.key = key;
 
             barMovementPixelPerTick = AppSettings.barSpeed / (1000f / (1000f / AppSettings.tickrate));
             barMovementVector = new Vector2f(0f, barMovementPixelPerTick);
+
+            texture = new RenderTexture((uint)key.width, (uint)key.py);
+            sprite = new Sprite(texture.Texture);
+            sprite.Position = new Vector2f(key.px, 0f);
+
+            fadeMask = new Sprite(Textures.fadeMaskTexture);
+            fadeMask.Scale = new Vector2f(key.width / 100f, 1f);
         }
     }
 }

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Glacc.KeyOverlay_qwq": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"config.std.live.ini\""
     }
   }
 }

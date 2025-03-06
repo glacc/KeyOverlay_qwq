@@ -12,6 +12,9 @@ namespace Glacc.KeyOverlay_qwq
 
         static Texture? fadeTexture;
         public static Sprite? fade;
+
+        public static Texture? fadeMaskTexture;
+
         static void InitFadeTexture(int width, int height, Color colorStartFromTop, Color colorEndToBottom, ref Texture? texture)
         {
             int stride = width * 4;
@@ -69,6 +72,15 @@ namespace Glacc.KeyOverlay_qwq
             );
             fade?.Dispose();
             fade = new Sprite(fadeTexture);
+
+            InitFadeTexture
+            (
+                100,
+                AppSettings.fadeHeight,
+                new Color(255, 255, 255, 0),
+                new Color(255, 255, 255, 255),
+                ref fadeMaskTexture
+            );
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Glacc.KeyOverlay_qwq
         static Mutex settingsUpdateMutex = new Mutex();
         static bool settingsUpdateFlag = false;
 
-        static RenderStates renderStatesAlphaBlend = RenderStates.Default;
+        static RenderStates renderStatesAlphaBlend = new RenderStates(RenderStates.Default);
 
         static void InitRenderStates()
         {
@@ -189,6 +189,7 @@ namespace Glacc.KeyOverlay_qwq
             AppSettings.UpdateSettingsFromConfig();
 
             window = new AppWindow("Key Overlay", AppSettings.width, AppSettings.height);
+            window.allowTransparentWindow = true;
 
             window.userInit += UserInit;
             window.userUpdate += UserUpdate;

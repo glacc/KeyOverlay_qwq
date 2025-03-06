@@ -24,6 +24,10 @@ namespace Glacc.KeyOverlay_qwq
 
         public static int keyFontSize = 24;
         public static int keyLightFadeDuration = 8;
+        public static float keyPressAlpha = 0.5f;
+
+        public static float lightAlphaCorrection = 0.25f;
+        public static int lightingRange = 64;
 
         public static bool showCounter = true;
         public static int counterFontSize = 16;
@@ -32,8 +36,6 @@ namespace Glacc.KeyOverlay_qwq
         public static float counterSpeed = 0.2f;
 
         public static int fadeHeight = 200;
-
-        public static int lightingRange = 64;
 
         public static Color backgroundColour = Color.Black;
 
@@ -109,8 +111,13 @@ namespace Glacc.KeyOverlay_qwq
             keyBorderSize = int.Parse(Config.config["General"]["KeyBorderSize"]);
             keySpacing = int.Parse(Config.config["General"]["KeySpacing"]);
 
+            keyPressAlpha = float.Parse(Config.config["General"]["KeyPressAlpha"], CultureInfo.InvariantCulture);
+
             keyFontSize = int.Parse(Config.config["General"]["KeyFontSize"]);
             keyLightFadeDuration = int.Parse(Config.config["General"]["LightFadeTime"]);
+
+            lightAlphaCorrection = float.Parse(Config.config["General"]["LightAlphaCorrection"], CultureInfo.InvariantCulture);
+            lightingRange = int.Parse(Config.config["General"]["LightRange"]);
 
             counterFontSize = int.Parse(Config.config["General"]["CounterFontSize"]);
             counterFontWidth = int.Parse(Config.config["General"]["CounterFontWidth"]);
@@ -119,22 +126,22 @@ namespace Glacc.KeyOverlay_qwq
             string showCounterStr = Config.config["General"]["ShowCounter"].ToLower();
             showCounter = (showCounterStr == "true" || showCounterStr == "yes");
 
-            lightingRange = int.Parse(Config.config["General"]["LightRange"]);
-
             fontFileName = Config.config["General"]["FontFileName"];
             Settings.LoadFont(fontFileName);
 
             // Background color
-            byte[] backgroundColourBytes = new byte[3];
+            byte[] backgroundColourBytes = new byte[4];
+            backgroundColourBytes[3] = 255;
             string backgroundColourString = Config.config["Colours"]["Background"];
             string[] backgroundRGBString = backgroundColourString.Split(',');
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < Math.Min(backgroundRGBString.Length, 4); i++)
                 backgroundColourBytes[i] = byte.Parse(backgroundRGBString[i]);
             backgroundColour = new Color
                 (
                     backgroundColourBytes[0],
                     backgroundColourBytes[1],
-                    backgroundColourBytes[2]
+                    backgroundColourBytes[2],
+                    backgroundColourBytes[3]
                 );
 
             // Key count check and key size
