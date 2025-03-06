@@ -54,9 +54,9 @@ namespace Glacc.KeyOverlay_qwq
 
                 string currentLine;
                 if (indexOfStartOfComment >= 0)
-                    currentLine = currentLineFull.Substring(0, indexOfStartOfComment);
+                    currentLine = currentLineFull.Substring(0, indexOfStartOfComment).Trim();
                 else
-                    currentLine = currentLineFull;
+                    currentLine = currentLineFull.Trim();
 
                 // Section
                 if (currentLine.StartsWith('[') && currentLine.EndsWith(']'))
@@ -81,8 +81,8 @@ namespace Glacc.KeyOverlay_qwq
                 string[] keyAndValue = currentLine.Split('=', StringSplitOptions.RemoveEmptyEntries);
                 if (keyAndValue.Length == 2)
                 {
-                    string key = keyAndValue[0];
-                    string value = keyAndValue[1];
+                    string key = keyAndValue[0].Trim();
+                    string value = keyAndValue[1].Trim();
 
                     if (!currentSection.ContainsKey(key))
                         currentSection.Add(key, value);

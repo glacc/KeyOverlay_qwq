@@ -154,7 +154,7 @@ namespace Glacc.KeyOverlay_qwq
         #region WindowEvents
         static void UserInit(object? sender, EventArgs args)
         {
-            // InitRenderStates();
+            InitRenderStates();
 
             Initialize();
         }

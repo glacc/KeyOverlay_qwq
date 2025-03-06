@@ -1,4 +1,5 @@
 ﻿
+using Glacc.UI;
 using SFML.Graphics;
 using SFML.Window;
 using System.Globalization;
@@ -7,6 +8,8 @@ namespace Glacc.KeyOverlay_qwq
 {
     internal class AppSettings
     {
+        public static string fontFileName = string.Empty;
+
         public static int width;
         public static int height = 400;
 
@@ -25,6 +28,8 @@ namespace Glacc.KeyOverlay_qwq
         public static bool showCounter = true;
         public static int counterFontSize = 16;
         public static int counterFontWidth = 10;
+
+        public static float counterSpeed = 0.2f;
 
         public static int fadeHeight = 200;
 
@@ -109,11 +114,15 @@ namespace Glacc.KeyOverlay_qwq
 
             counterFontSize = int.Parse(Config.config["General"]["CounterFontSize"]);
             counterFontWidth = int.Parse(Config.config["General"]["CounterFontWidth"]);
+            counterSpeed = float.Parse(Config.config["General"]["CounterSpeed"], CultureInfo.InvariantCulture);
 
             string showCounterStr = Config.config["General"]["ShowCounter"].ToLower();
             showCounter = (showCounterStr == "true" || showCounterStr == "yes");
 
             lightingRange = int.Parse(Config.config["General"]["LightRange"]);
+
+            fontFileName = Config.config["General"]["FontFileName"];
+            Settings.LoadFont(fontFileName);
 
             // Background color
             byte[] backgroundColourBytes = new byte[3];

@@ -61,7 +61,9 @@ namespace Glacc.KeyOverlay_qwq.Elements
             get => m_hasMovedToEnd;
         }
 
-        const float moveSpeed = 0.2f;
+        const float moveSpeedReference = 0.2f;
+        const int tickRateReference = 100;
+        float moveSpeed;
 
         Font font;
 
@@ -163,6 +165,8 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
                 nums.Enqueue(newNum);
             }
+
+            moveSpeed = Math.Clamp(AppSettings.counterSpeed * (tickRateReference / (float)AppSettings.tickrate), 0.00000001f, 1.0f);
         }
     }
 }

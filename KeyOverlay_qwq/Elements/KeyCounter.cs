@@ -23,7 +23,9 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
         float textureOffsetX = 0f;
 
-        const float textureMoveSpeed = 0.2f;
+        const float moveSpeedReference = 0.2f;
+        const int tickRateReference = 100;
+        float textureMoveSpeed = 0.2f;
 
         RenderTexture renderTexture;
         Sprite sprite;
@@ -131,6 +133,8 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
             renderTexture = new RenderTexture((uint)textureWidth, (uint)textureHeight);
             sprite = new Sprite(renderTexture.Texture);
+
+            textureMoveSpeed = Math.Clamp(AppSettings.counterSpeed * (tickRateReference / (float)AppSettings.tickrate), 0.00000001f, 1.0f);
         }
     }
 }
