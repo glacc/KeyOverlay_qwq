@@ -110,6 +110,9 @@ namespace Glacc.KeyOverlay_qwq
             counterFontSize = int.Parse(Config.config["General"]["CounterFontSize"]);
             counterFontWidth = int.Parse(Config.config["General"]["CounterFontWidth"]);
 
+            string showCounterStr = Config.config["General"]["ShowCounter"].ToLower();
+            showCounter = (showCounterStr == "true" || showCounterStr == "yes");
+
             lightingRange = int.Parse(Config.config["General"]["LightRange"]);
 
             // Background color

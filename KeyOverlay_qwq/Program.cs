@@ -81,7 +81,7 @@ namespace Glacc.KeyOverlay_qwq
                 // The bars and counter associated to the key.
                 KeyPressBar bars = new KeyPressBar(key);
 
-                if (Settings.font != null)
+                if (Settings.font != null && AppSettings.showCounter)
                 {
                     KeyCounter counter =
                         new KeyCounter
