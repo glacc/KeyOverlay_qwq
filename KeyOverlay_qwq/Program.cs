@@ -2,6 +2,7 @@
 using Glacc.UI;
 using SFML.Graphics;
 using SFML.Window;
+using System.Globalization;
 
 namespace Glacc.KeyOverlay_qwq
 {
@@ -25,13 +26,25 @@ namespace Glacc.KeyOverlay_qwq
 
         static void AddKeysElements()
         {
-            int keyX = AppSettings.keySpacing;
-            int keyY = AppSettings.height - AppSettings.keySpacing - AppSettings.keySize;
+            int keyX = AppSettings.keySpacing + AppSettings.borderLeft;
+            int keyY = AppSettings.height - AppSettings.keySpacing - AppSettings.keySize - AppSettings.borderBottom;
+
+            int keyBottom = keyY + AppSettings.keySize;
+
             for (int i = 0; i < AppSettings.keyCount; i++)
             {
-                Key key = new Key(AppSettings.keySize, AppSettings.keySize, keyX, keyY);
-
                 string configKeyName = $"Key{i + 1}";
+
+                // Key size
+
+                int keyWidth;
+                int keyHeight = AppSettings.keySize;
+
+                float widthMultiplier = AppSettings.keyWidthMultipliers[i];
+                keyWidth = (int)(AppSettings.keySize * widthMultiplier);
+
+                // Create key element
+                Key key = new Key(keyWidth, keyHeight, keyX, keyY);
 
                 string keycodeString = Config.config["Keys"][configKeyName];
 
@@ -45,13 +58,18 @@ namespace Glacc.KeyOverlay_qwq
                 else
                     key.mouseButton = (Mouse.Button)Enum.Parse(typeof(Mouse.Button), keycodeString.Substring(1));
 
-                string keyColourString = Config.config["Colours"][configKeyName];
-
                 // Key colour
-                byte[] keyRGB = new byte[3];
-                string[] keyRGBString = keyColourString.Split(',');
-                for (int j = 0; j < 3; j++)
-                    keyRGB[j] = byte.Parse(keyRGBString[j]);
+                byte[] keyRGB = new byte[3] { 255, 255, 255 };
+                if (Config.config.ContainsKey("Colours"))
+                {
+                    if (Config.config["Colours"].ContainsKey(configKeyName))
+                    {
+                        string keyColourString = Config.config["Colours"][configKeyName];
+                        string[] keyRGBString = keyColourString.Split(',');
+                        for (int j = 0; j < 3; j++)
+                            keyRGB[j] = byte.Parse(keyRGBString[j]);
+                    }
+                }
 
                 key.keyColor = new Color(keyRGB[0], keyRGB[1], keyRGB[2]);
 
@@ -60,20 +78,30 @@ namespace Glacc.KeyOverlay_qwq
                 key.keyTextSize = AppSettings.keyFontSize;
                 key.fadeDuration = AppSettings.keyLightFadeDuration;
 
-                // Update position for next key
-                keyX += AppSettings.keySize + AppSettings.keySpacing;
-
                 // The bars and counter associated to the key.
                 KeyPressBar bars = new KeyPressBar(key);
 
                 if (Settings.font != null)
                 {
-                    KeyCounter counter = new KeyCounter(keyX + (key.width / 2), keyY + key.height + (AppSettings.keySpacing / 2), key, 8, 12, Settings.font);
+                    KeyCounter counter =
+                        new KeyCounter
+                        (
+                            keyX + (key.width / 2),
+                            (keyBottom + AppSettings.height) / 2,
+                            key,
+                            AppSettings.counterFontWidth,
+                            AppSettings.counterFontSize,
+                            Settings.font
+                        );
+
                     elements.Add(counter);
                 }
 
                 elements.Add(bars);
                 elements.Add(key);
+
+                // Update position for next key
+                keyX += keyWidth + AppSettings.keySpacing;
             }
         }
 

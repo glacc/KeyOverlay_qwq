@@ -28,8 +28,12 @@ namespace Glacc.KeyOverlay_qwq.Elements
             get => m_number;
             set
             {
-                AddNumberText(m_number, value);
+                if (m_number != value && !moveToEnd)
+                    AddNumberText(m_number, value);
+
                 m_number = value;
+
+                moveToEnd = false;
             }
         }
 
@@ -43,11 +47,12 @@ namespace Glacc.KeyOverlay_qwq.Elements
             get => m_moveToEnd;
             set
             {
-                m_moveToEnd = value;
-                if (value)
+                if (!m_moveToEnd && value == true)
                     AddNumberText(m_number, 0, true);
-                else
+                else if (m_moveToEnd && value == false)
                     AddNumberText(0, m_number, false);
+
+                m_moveToEnd = value;
             }
         }
         bool m_hasMovedToEnd = false;
@@ -62,23 +67,29 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
         Queue<Text> nums = new Queue<Text>();
 
+        Text CreateNewNumber(int num, bool isEmpty = false)
+        {
+            string numStr = isEmpty ? "" : $"{num}";
+
+            Text newNum = new Text(numStr, font);
+            newNum.CharacterSize = (uint)fontSize;
+            Utils.UpdateTextOrigins(newNum, TextAlign.Center);
+
+            return newNum;
+        }
+
         void AddNumberText(int oldNumber, int newNumber, bool isEmpty = false)
         {
-            if (isEmpty)
+            while (true)
             {
-                newNumber = oldNumber + 1;
-                if (newNumber >= 10)
-                    newNumber = 0;
-            }
+                if (oldNumber == newNumber)
+                    break;
 
-            while (oldNumber != newNumber + 1)
-            {
+                oldNumber++;
                 if (oldNumber >= 10)
                     oldNumber = 0;
 
-                Text newNum = new Text($"{oldNumber}", font);
-                newNum.CharacterSize = (uint)fontSize;
-                Utils.UpdateTextOrigins(newNum, TextAlign.Center);
+                Text newNum = CreateNewNumber(oldNumber, isEmpty);
 
                 if (nums.Count == 0)
                     newNum.Position = new Vector2f(px, py);
@@ -87,7 +98,8 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
                 nums.Enqueue(newNum);
 
-                oldNumber++;
+                if (isEmpty)
+                    break;
             }
         }
 
@@ -96,10 +108,16 @@ namespace Glacc.KeyOverlay_qwq.Elements
             if (nums.Count > 0)
             {
                 float yOfLastText = nums.Last().Position.Y;
-                if (MathF.Abs(yOfLastText - py) <= 0.2f)
-                    m_hasMovedToEnd = true;
 
                 float offsetY = (py - yOfLastText) * moveSpeed;
+
+                if (m_moveToEnd)
+                {
+                    if (MathF.Abs(offsetY) <= 0.1f)
+                        m_hasMovedToEnd = true;
+                }
+                else
+                    m_hasMovedToEnd = false;
 
                 float yToRemove = py + (numSpacing / 2);
 
@@ -140,10 +158,7 @@ namespace Glacc.KeyOverlay_qwq.Elements
             {
                 m_number = (int)num;
 
-                Text newNum = new Text($"{(int)num}", font);
-                newNum.CharacterSize = (uint)fontSize;
-                Utils.UpdateTextOrigins(newNum, TextAlign.Center);
-
+                Text newNum = CreateNewNumber((int)num);
                 newNum.Position = new Vector2f(px, py) + offsetOfNewNumber;
 
                 nums.Enqueue(newNum);

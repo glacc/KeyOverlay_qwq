@@ -258,6 +258,12 @@ namespace Glacc.KeyOverlay_qwq.Elements
                     fadeTimeRemaining = 0f;
             }
 
+            if (AppSettings.keyClearCounter != null)
+            {
+                if (Keyboard.IsKeyPressed((Keyboard.Key)AppSettings.keyClearCounter))
+                    m_keyCount = 0;
+            }
+
             pressedOld = m_pressed;
         }
 

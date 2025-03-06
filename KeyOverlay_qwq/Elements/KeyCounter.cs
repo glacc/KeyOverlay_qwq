@@ -21,6 +21,10 @@ namespace Glacc.KeyOverlay_qwq.Elements
         int textureWidth;
         int textureHeight;
 
+        float textureOffsetX = 0f;
+
+        const float textureMoveSpeed = 0.2f;
+
         RenderTexture renderTexture;
         Sprite sprite;
 
@@ -61,6 +65,8 @@ namespace Glacc.KeyOverlay_qwq.Elements
                 numOfDigit++;
             }
 
+            int validDigits = numOfDigit;
+
             while (numOfDigit < digits.Count)
             {
                 KeyCounterDigit currentDigit = digits[numOfDigit];
@@ -79,6 +85,11 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
             foreach (KeyCounterDigit digit in digits)
                 digit.Update();
+
+            float textWidth = fontWidth * Math.Max(validDigits, 1);
+            float textureTargetOffsetX = -textureWidth + (textWidth / 2f) + (fontWidth / 2f);
+
+            textureOffsetX = textureOffsetX + (textureTargetOffsetX - textureOffsetX) * textureMoveSpeed;
         }
 
         public override Drawable?[] Draw()
@@ -90,7 +101,7 @@ namespace Glacc.KeyOverlay_qwq.Elements
 
             renderTexture.Display();
 
-            sprite.Position = new Vector2f(px - (textureWidth / 2), py - (textureHeight / 2));
+            sprite.Position = new Vector2f(px + textureOffsetX, py - (textureHeight / 2));
 
             return [sprite];
         }
@@ -114,7 +125,9 @@ namespace Glacc.KeyOverlay_qwq.Elements
             this.font = font;
 
             textureWidth = fontWidth * maxDigits;
-            textureHeight = fontSize * 2;
+            textureHeight = fontSize;
+
+            textureOffsetX = -textureWidth;
 
             renderTexture = new RenderTexture((uint)textureWidth, (uint)textureHeight);
             sprite = new Sprite(renderTexture.Texture);
