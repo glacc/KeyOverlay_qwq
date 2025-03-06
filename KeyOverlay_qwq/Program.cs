@@ -177,6 +177,11 @@ namespace Glacc.KeyOverlay_qwq
 
         static void Main(string[] args)
         {
+            if (args.Length == 1)
+                Config.SetConfigFile(args[0]);
+            else
+                Config.SetConfigFile();
+
             Config.onConfigFileChanged += OnConfigFileChanged;
 
             Config.ReadConfigFile();

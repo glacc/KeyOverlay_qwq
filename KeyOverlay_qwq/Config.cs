@@ -1,5 +1,6 @@
 ﻿
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Glacc.KeyOverlay_qwq
@@ -10,9 +11,11 @@ namespace Glacc.KeyOverlay_qwq
     {
         public static Mutex configChangingMutex = new Mutex();
 
-        const string configFileName = "config.ini";
+        public const string defaultConfigFileName = "config.ini";
 
-        static string configFileFullPath;
+        public static string? configFilePath;
+        public static string configFileName = defaultConfigFileName;
+        static string configFileFullPath = string.Empty;
 
         static Dictionary<string, Dictionary<string, string>> configSections = new Dictionary<string, Dictionary<string, string>>();
         public static Dictionary<string, Dictionary<string, string>> config
@@ -20,7 +23,7 @@ namespace Glacc.KeyOverlay_qwq
             get => configSections;
         }
 
-        static FileSystemWatcher fileSystemWatcher;
+        static FileSystemWatcher? fileSystemWatcher;
 
         public static EventHandler<EventArgs>? onConfigFileChanged = null;
 
@@ -93,7 +96,8 @@ namespace Glacc.KeyOverlay_qwq
 
             configChangingMutex.ReleaseMutex();
 
-            fileSystemWatcher.EnableRaisingEvents = true;
+            if (fileSystemWatcher != null)
+                fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         static void OnConfigFileChangedInternal(object? sender, FileSystemEventArgs args)
@@ -106,12 +110,31 @@ namespace Glacc.KeyOverlay_qwq
             onConfigFileChanged?.Invoke(null, EventArgs.Empty);
         }
 
-        static Config()
+        public static void SetConfigFile(string? newConfigFileName = null)
         {
-            string assemblyPath = string.Join('\\', Assembly.GetExecutingAssembly().Location.Split("\\").SkipLast(1));
-            configFileFullPath = Path.Combine(assemblyPath, configFileName);
+            if (newConfigFileName == null)
+            {
+                configFileName = defaultConfigFileName;
 
-            fileSystemWatcher = new FileSystemWatcher(assemblyPath);
+                string assemblyPath = string.Join('/', Assembly.GetExecutingAssembly().Location.Split('\\', '/').SkipLast(1));
+                configFilePath = assemblyPath;
+
+                configFileFullPath = Path.Combine(assemblyPath, configFileName);
+            }
+            else
+            {
+                FileInfo fileInfo = new FileInfo(newConfigFileName);
+
+                string[] splittedFilePath = fileInfo.FullName.Split('\\', '/');
+
+                configFilePath = string.Join('/', splittedFilePath.SkipLast(1));
+                configFileName = splittedFilePath.Last();
+
+                configFileFullPath = Path.Combine(configFilePath, configFileName);
+            }
+
+            fileSystemWatcher?.Dispose();
+            fileSystemWatcher = new FileSystemWatcher(configFilePath);
             fileSystemWatcher.Filter = configFileName;
             fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
             fileSystemWatcher.Changed += OnConfigFileChangedInternal;
