@@ -1,11 +1,8 @@
-﻿using Glacc.UI;
+﻿// SPDX-License-Identifier: GPL-3.0-or-later
+
+using Glacc.UI;
 using SFML.Graphics;
 using SFML.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glacc.KeyOverlay_qwq.Elements
 {

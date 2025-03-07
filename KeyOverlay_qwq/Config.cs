@@ -1,7 +1,6 @@
-﻿
+﻿// SPDX-License-Identifier: GPL-3.0-or-later
+
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Glacc.KeyOverlay_qwq
 {

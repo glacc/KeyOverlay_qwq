@@ -1,4 +1,6 @@
-﻿using SFML.Graphics;
+﻿// SPDX-License-Identifier: GPL-3.0-or-later
+
+using SFML.Graphics;
 
 namespace Glacc.KeyOverlay_qwq
 {
